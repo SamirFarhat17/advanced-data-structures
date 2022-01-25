@@ -1,2 +1,2 @@
 # advanced-data-structures
-## Labs and assignements for EC504
+Labs and assignements for EC504
