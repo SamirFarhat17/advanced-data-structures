@@ -38,7 +38,6 @@ void insertionsort(int a[],  int n) {
 
 // Order Theta(NlogN) sorting
 void mergeSort(int a[], int a_tmp[], int l, int r) {
-    // you program this.  a_tmp can be used for merging
     int i, j;
     if(r > l) {
         int mid = l + (r - l) / 2;
@@ -63,8 +62,39 @@ void mergeSort(int a[], int a_tmp[], int l, int r) {
 
 
 void mergeSortblend(int a[], int a_tmp[], int l, int r) {
-    // You program this
+	int elements = r-l;
+	int i, j, n;
+	if(elements <= 0) return;
 
+	if(elements >= 32){
+		int m = l + (r - l)/2;
+		mergeSortblend(a, a_tmp, l, m);
+		mergeSortblend(a, a_tmp, m + 1, r);
+
+		for(i = m + 1; i > l; i--){
+			a_tmp[i - 1] = a[i - 1];
+		}
+		for(j = m; j < r; j++){
+			a_tmp[r + m - j] = a[j + 1];
+		}
+		for(n = l; n <= r; n++){
+			if(a_tmp[i] < a_tmp[j]) a[n] = a_tmp[i++];
+            else a[n] = a_tmp[j--];
+		}
+	}
+
+	else {
+		for(i = l + 1; i <= r; i++) {
+			j = i - 1;
+			n = a[i];
+
+			while(j >= l && a[j] > n) {
+				a[j + 1] = a[j];
+				j--;
+			}
+			a[j + 1] = n;
+		}
+	}
 }
 
 void checkInorder(int a[], int left, int right) {
@@ -75,9 +105,115 @@ void checkInorder(int a[], int left, int right) {
         }
     }
 }
-void simpleTimsort(int a[], int a_tmp[], int n) {
-    //You program this
 
+void simpleTimsort(int a[], int a_tmp[], int n) {
+    int minrunsize = 32, num_in_stack = 0;
+    int runstack[n / 32];
+    runstack[num_in_stack] = 0;
+    int i, j, z, key, l, m, r;
+    int secondLast, Last;
+
+    for(z = 1; z < n; z++) {
+        if(a[z] > a[z - 1]) {
+            continue;
+        } else {
+            // If the size of the run is less than minrun
+            if( (z - runstack[num_in_stack]) < minrunsize) {
+                // Insertion
+                key = a[z];
+                j = z - 1;
+
+                while (j >= runstack[num_in_stack] && a[j] > key) {
+                    a[j + 1] = a[j];
+                    j = j - 1;
+                }
+
+                a[j + 1] = key;
+
+                continue;
+            }
+            // If the run is greater or equal to minrun
+            else if((z - runstack[num_in_stack]) >= minrunsize) {
+                num_in_stack++;
+                runstack[num_in_stack] = z;
+
+                secondLast = runstack[num_in_stack - 1] - runstack[num_in_stack - 2];
+                Last = runstack[num_in_stack] - runstack[num_in_stack - 1];
+
+                while(secondLast <= Last && num_in_stack > 1) {
+                    // Merge
+                    l = runstack[num_in_stack - 2];
+                    m = runstack[num_in_stack - 1];
+                    r = z;
+
+                    for(i = m - 1; i >= l; i--) {
+                        a_tmp[i] = a[i];
+                    }
+
+                    i = l;
+                    j = m;
+
+                    for(key = l; key < r; key++) {
+                        if(i < m && j < r) {
+                            if(a_tmp[i] < a[j]) {
+                                a[key] = a_tmp[i++];
+                            } else {
+                                a[key] = a[j++];
+                            }
+                        } else {
+                            if(j >= r ) {
+                                a[key] = a_tmp[i++];
+                            } else if(i >= m) {
+                                break;
+                            }
+                        }
+                    }
+
+                    num_in_stack--;
+                    runstack[num_in_stack] = z;
+
+                    secondLast = runstack[num_in_stack - 1] - runstack[num_in_stack - 2];
+                    Last = runstack[num_in_stack] - runstack[num_in_stack - 1];
+                }
+            }
+        }
+    }
+
+    num_in_stack++;
+    runstack[num_in_stack] = n;
+
+    while(num_in_stack > 1) {
+        // Merge
+        l = runstack[num_in_stack - 2];
+        m = runstack[num_in_stack - 1];
+        r = n;
+
+        for(i = m - 1; i >= l; i--) {
+            a_tmp[i] = a[i];
+        }
+
+        i = l;
+        j = m;
+
+        for(key = l; key < r; key++) {
+            if(i < m && j < r) {
+                if(a_tmp[i] < a[j]) {
+                    a[key] = a_tmp[i++];
+                } else {
+                    a[key] = a[j++];
+                }
+            } else {
+                if(j >= r ) {
+                    a[key] = a_tmp[i++];
+                } else if(i >= m) {
+                    break;
+                }
+            }
+        }
+
+        num_in_stack--;
+        runstack[num_in_stack] = n;
+    }
 }
 
 #endif
