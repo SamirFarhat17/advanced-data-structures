@@ -15,7 +15,6 @@ void swap(int* a, int* b) {
     *b = temp;
 }
 
-
 /* See Knuth's shuffles https://en.wikipedia.org/wiki/Random_permutation */
 // slowest O(n^2)
 void insertionsort(int a[],  int n) {
@@ -33,8 +32,6 @@ void insertionsort(int a[],  int n) {
         a[reference + 1] = key;
     }
 }
-
-
 
 // Order Theta(NlogN) sorting
 void mergeSort(int a[], int a_tmp[], int l, int r) {
@@ -60,41 +57,41 @@ void mergeSort(int a[], int a_tmp[], int l, int r) {
     }
 }
 
-
+// Improved MergeSort by wielding insertionSort
 void mergeSortblend(int a[], int a_tmp[], int l, int r) {
-	int elements = r-l;
-	int i, j, n;
-	if(elements <= 0) return;
+    int elements = r - l;
+    int i, j, n;
+    if(elements <= 0) return;
 
-	if(elements >= 32){
-		int m = l + (r - l)/2;
-		mergeSortblend(a, a_tmp, l, m);
-		mergeSortblend(a, a_tmp, m + 1, r);
+    if(elements >= 32) {
+        int m = l + (r - l) / 2;
+        mergeSortblend(a, a_tmp, l, m);
+        mergeSortblend(a, a_tmp, m + 1, r);
 
-		for(i = m + 1; i > l; i--){
-			a_tmp[i - 1] = a[i - 1];
-		}
-		for(j = m; j < r; j++){
-			a_tmp[r + m - j] = a[j + 1];
-		}
-		for(n = l; n <= r; n++){
-			if(a_tmp[i] < a_tmp[j]) a[n] = a_tmp[i++];
+        for(i = m + 1; i > l; i--) {
+            a_tmp[i - 1] = a[i - 1];
+        }
+        for(j = m; j < r; j++) {
+            a_tmp[r + m - j] = a[j + 1];
+        }
+        for(n = l; n <= r; n++) {
+            if(a_tmp[i] < a_tmp[j]) a[n] = a_tmp[i++];
             else a[n] = a_tmp[j--];
-		}
-	}
+        }
+    }
 
-	else {
-		for(i = l + 1; i <= r; i++) {
-			j = i - 1;
-			n = a[i];
+    else {
+        for(i = l + 1; i <= r; i++) {
+            j = i - 1;
+            n = a[i];
 
-			while(j >= l && a[j] > n) {
-				a[j + 1] = a[j];
-				j--;
-			}
-			a[j + 1] = n;
-		}
-	}
+            while(j >= l && a[j] > n) {
+                a[j + 1] = a[j];
+                j--;
+            }
+            a[j + 1] = n;
+        }
+    }
 }
 
 void checkInorder(int a[], int left, int right) {
@@ -105,107 +102,138 @@ void checkInorder(int a[], int left, int right) {
         }
     }
 }
+int findIncrement(int a[], int index) {
+    int count = 0;
+    while(a[index] > a[index + 1]) {
+        count++;
+        index++;
+    }
+    return count;
+}
+
+void timsort(int a[], int a_tmp[], int n) {
+    int minrunsize = 32, num_in_stack = 0;
+    int runstack[n / minrunsize];
+    int runsize, new_run_index;
+    for(int i = 0; i < n; i++) {
+        runsize = findIncrement(a, i);
+        i += runsize;
+        if(runsize < minrunsize) {
+            // insert element of a[i] into the run
+            runstack[num_in_stack] = a[i];
+            continue;
+        }
+        if(runsize >= minrunsize) {
+            num_in_stack++;
+            new_run_index = i + runsize;
+        }
+
+    }
+
+}
 
 void simpleTimsort(int a[], int a_tmp[], int n) {
     int minrunsize = 32, num_in_stack = 0;
     int runstack[n / 32];
     runstack[num_in_stack] = 0;
-    int i, j, z, key, l, m, r;
-    int secondLast, Last;
+    int j, p, left, mid, right, key;
+    int penultimate, last;
 
-    for(z = 1; z < n; z++) {
-        if(a[z] > a[z - 1]) {
+    for(int i = 1; i < n; i++) {
+        if(a[i] > a[i - 1]) {
             continue;
-        } else {
-            // If the size of the run is less than minrun
-            if( (z - runstack[num_in_stack]) < minrunsize) {
-                // Insertion
-                key = a[z];
-                j = z - 1;
+        }
 
-                while (j >= runstack[num_in_stack] && a[j] > key) {
-                    a[j + 1] = a[j];
-                    j = j - 1;
+        // If run length is less than minrunsize, insert element of a[i]
+        if( (i - runstack[num_in_stack]) < minrunsize) {
+            // Insertion
+            key = a[i];
+            j = i - 1;
+
+            while (j >= runstack[num_in_stack] && a[j] > key) {
+                a[j + 1] = a[j];
+                j = j - 1;
+            }
+
+            a[j + 1] = key;
+
+            continue;
+        }
+        // If run length is greater than or equal to minrunsize, increment num_in_stack,
+        // store the index of the new run into runstack[num_in_stack].
+        else if((i - runstack[num_in_stack]) >= minrunsize) {
+            num_in_stack++;
+            runstack[num_in_stack] = i;
+
+            penultimate = runstack[num_in_stack - 1] - runstack[num_in_stack - 2];
+            last = runstack[num_in_stack] - runstack[num_in_stack - 1];
+
+            while(penultimate <= last && num_in_stack > 1) {
+                // Merge
+                left = runstack[num_in_stack - 2];
+                mid = runstack[num_in_stack - 1];
+                right = i;
+
+                for(p = mid - 1; p >= left; p--) {
+                    a_tmp[p] = a[p];
                 }
 
-                a[j + 1] = key;
+                p = left;
+                j = mid;
 
-                continue;
-            }
-            // If the run is greater or equal to minrun
-            else if((z - runstack[num_in_stack]) >= minrunsize) {
-                num_in_stack++;
-                runstack[num_in_stack] = z;
-
-                secondLast = runstack[num_in_stack - 1] - runstack[num_in_stack - 2];
-                Last = runstack[num_in_stack] - runstack[num_in_stack - 1];
-
-                while(secondLast <= Last && num_in_stack > 1) {
-                    // Merge
-                    l = runstack[num_in_stack - 2];
-                    m = runstack[num_in_stack - 1];
-                    r = z;
-
-                    for(i = m - 1; i >= l; i--) {
-                        a_tmp[i] = a[i];
-                    }
-
-                    i = l;
-                    j = m;
-
-                    for(key = l; key < r; key++) {
-                        if(i < m && j < r) {
-                            if(a_tmp[i] < a[j]) {
-                                a[key] = a_tmp[i++];
-                            } else {
-                                a[key] = a[j++];
-                            }
+                for(key = left; key < right; key++) {
+                    if(p < mid && j < right) {
+                        if(a_tmp[p] < a[j]) {
+                            a[key] = a_tmp[p++];
                         } else {
-                            if(j >= r ) {
-                                a[key] = a_tmp[i++];
-                            } else if(i >= m) {
-                                break;
-                            }
+                            a[key] = a[j++];
+                        }
+                    } else {
+                        if(j >= right ) {
+                            a[key] = a_tmp[p++];
+                        } else if(p >= mid) {
+                            break;
                         }
                     }
-
-                    num_in_stack--;
-                    runstack[num_in_stack] = z;
-
-                    secondLast = runstack[num_in_stack - 1] - runstack[num_in_stack - 2];
-                    Last = runstack[num_in_stack] - runstack[num_in_stack - 1];
                 }
+
+                num_in_stack--;
+                runstack[num_in_stack] = i;
+
+                penultimate = runstack[num_in_stack - 1] - runstack[num_in_stack - 2];
+                last = runstack[num_in_stack] - runstack[num_in_stack - 1];
             }
         }
+
     }
 
     num_in_stack++;
     runstack[num_in_stack] = n;
 
-    while(num_in_stack > 1) {
+    while(num_in_stack >= 2) {
         // Merge
-        l = runstack[num_in_stack - 2];
-        m = runstack[num_in_stack - 1];
-        r = n;
+        left = runstack[num_in_stack - 2];
+        mid = runstack[num_in_stack - 1];
+        right = n;
 
-        for(i = m - 1; i >= l; i--) {
-            a_tmp[i] = a[i];
+        for(p = mid - 1; p >= left; p--) {
+            a_tmp[p] = a[p];
         }
 
-        i = l;
-        j = m;
+        p = left;
+        j = mid;
 
-        for(key = l; key < r; key++) {
-            if(i < m && j < r) {
-                if(a_tmp[i] < a[j]) {
-                    a[key] = a_tmp[i++];
+        for(key = left; key < right; key++) {
+            if(p < mid && j < right) {
+                if(a_tmp[p] < a[j]) {
+                    a[key] = a_tmp[p++];
                 } else {
                     a[key] = a[j++];
                 }
             } else {
-                if(j >= r ) {
-                    a[key] = a_tmp[i++];
-                } else if(i >= m) {
+                if(j >= right ) {
+                    a[key] = a_tmp[p++];
+                } else if(p >= mid) {
                     break;
                 }
             }
