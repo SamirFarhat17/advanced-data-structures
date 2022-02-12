@@ -25,19 +25,14 @@ class SplayTree {
 
     SplayTree() {}
 
-    // RR(Y rotates to the right
     Tree_node* Right_Rotate(Tree_node* k2) {
-        // Single rotate the root k2 to the right
-        // You have to implement this, return the new root
         Tree_node* k1 = k2->lchild;
         k2->lchild = k1->rchild;
         k1->rchild = k2;
         return k1;
     }
-    // LL(Y rotates to the left)
+    
     Tree_node* Left_Rotate(Tree_node* k2) {
-        // Single rotate the root k2 to the left
-        // You have to implement this, return the new root.
         Tree_node* k1 = k2->rchild;
         k2->rchild = k1->lchild;
         k1->lchild = k2;
@@ -48,28 +43,31 @@ class SplayTree {
     // An implementation of top-down splay tree
 
     Tree_node* Splay(int key, Tree_node* root) {
-        //This is one of the things you have to implement
-
         if (!root)
             return NULL;
         Tree_node Tree;
         /* .......*/
+////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////
         Tree.lchild = NULL;
         Tree.rchild = NULL;
 
         Tree_node* LeftTreeMax = &Tree;
         Tree_node* RightTreeMin = &Tree;
+        int flag = 1;
 
-        while(1) {
+        while(flag) {
             if(key < root->key) {
                 if(!root->lchild) {
-                    break;
+                    flag = 0; 
+                    continue;
                 }
 
                 if(key < root->lchild->key) {
                     root = Right_Rotate(root);
                     if(!root->lchild) {
-                        break;
+                        flag = 0; 
+                        continue;
                     }
                 }
 
@@ -79,13 +77,15 @@ class SplayTree {
                 RightTreeMin->lchild = NULL;
             } else if(key > root->key) {
                 if(!root->rchild) {
-                    break;
+                    flag = 0; 
+                    continue;
                 }
 
                 if(key > root->rchild->key) {
                     root = Left_Rotate(root);
                     if(!root->rchild) {
-                        break;
+                        flag = 0; 
+                        continue;
                     }
                 }
 
@@ -94,7 +94,8 @@ class SplayTree {
                 root = root->rchild;
                 LeftTreeMax->rchild = NULL;
             } else {
-                break;
+                flag = 0; 
+                continue;
             }
         }
 
@@ -104,8 +105,8 @@ class SplayTree {
         root->rchild = Tree.lchild;
         return root;
     }
-
-
+////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////
 
     Tree_node* New_Node(int key) {
         Tree_node*  my_node = new Tree_node;

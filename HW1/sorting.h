@@ -102,40 +102,13 @@ void checkInorder(int a[], int left, int right) {
         }
     }
 }
-int findIncrement(int a[], int index) {
-    int count = 0;
-    while(a[index] > a[index + 1]) {
-        count++;
-        index++;
-    }
-    return count;
-}
-
-void timsort(int a[], int a_tmp[], int n) {
-    int minrunsize = 32, num_in_stack = 0;
-    int runstack[n / minrunsize];
-    int runsize, new_run_index;
-    for(int i = 0; i < n; i++) {
-        runsize = findIncrement(a, i);
-        i += runsize;
-        if(runsize < minrunsize) {
-            // insert element of a[i] into the run
-            runstack[num_in_stack] = a[i];
-            continue;
-        }
-        if(runsize >= minrunsize) {
-            num_in_stack++;
-            new_run_index = i + runsize;
-        }
-
-    }
-
-}
 
 void simpleTimsort(int a[], int a_tmp[], int n) {
+    // Variable initialization
     int minrunsize = 32, num_in_stack = 0;
     int runstack[n / 32];
     runstack[num_in_stack] = 0;
+
     int j, p, left, mid, right, key;
     int penultimate, last;
 
@@ -168,8 +141,9 @@ void simpleTimsort(int a[], int a_tmp[], int n) {
             penultimate = runstack[num_in_stack - 1] - runstack[num_in_stack - 2];
             last = runstack[num_in_stack] - runstack[num_in_stack - 1];
 
-            while(penultimate <= last && num_in_stack > 1) {
-                // Merge
+            // collapse the stack of runs as follows: While num_in_stack > 2
+            while(penultimate <= last && num_in_stack > 2) {
+                // Merge the last two runs
                 left = runstack[num_in_stack - 2];
                 mid = runstack[num_in_stack - 1];
                 right = i;
@@ -182,21 +156,22 @@ void simpleTimsort(int a[], int a_tmp[], int n) {
                 j = mid;
 
                 for(key = left; key < right; key++) {
-                    if(p < mid && j < right) {
+                    if(j < right && p < mid) {
                         if(a_tmp[p] < a[j]) {
                             a[key] = a_tmp[p++];
                         } else {
                             a[key] = a[j++];
                         }
-                    } else {
-                        if(j >= right ) {
-                            a[key] = a_tmp[p++];
-                        } else if(p >= mid) {
-                            break;
-                        }
+                        continue;
+                    } 
+                    
+                    if(j >= right ) {
+                        a[key] = a_tmp[p++];
+                    } else if(p >= mid) {
+                        break;
                     }
                 }
-
+                // Decrement num_in_stack by 1;
                 num_in_stack--;
                 runstack[num_in_stack] = i;
 
@@ -206,12 +181,14 @@ void simpleTimsort(int a[], int a_tmp[], int n) {
         }
 
     }
-
+    // if i gets to n-1, increment num_in_stack and set runstack[num_in_stack] to n
     num_in_stack++;
     runstack[num_in_stack] = n;
 
-    while(num_in_stack >= 2) {
-        // Merge
+    //  collapse the stack of runs as follows: While num_in_stack > 1
+    while(num_in_stack > 1) {
+        // Merge the last two runs 
+        // (starting at runstack[num_in_stack-2] and runstack[num_in_stack - 1]);
         left = runstack[num_in_stack - 2];
         mid = runstack[num_in_stack - 1];
         right = n;
@@ -238,7 +215,7 @@ void simpleTimsort(int a[], int a_tmp[], int n) {
                 }
             }
         }
-
+        //decrement num_in_stack by 1 and set runstack[num_in_stack] = n;
         num_in_stack--;
         runstack[num_in_stack] = n;
     }
