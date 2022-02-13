@@ -48,6 +48,7 @@ class SplayTree {
         while(true) {
             if(key < root->key) {
                 if(!root->lchild) break;
+                // if key < left_child’s key
                 if(key < root->lchild->key) {
                     root = Right_Rotate(root);
                     if(!root->lchild) break;
