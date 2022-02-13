@@ -82,7 +82,6 @@ void mergeSortblend(int a[], int a_tmp[], int l, int r) {
     }
 }
 
-// Improved performance by factor of ~2
 void simpleTimsort(int a[], int a_tmp[], int n) {
     // Variable initialization
     int minrunsize = 32, num_in_stack = 0;
@@ -143,8 +142,8 @@ void simpleTimsort(int a[], int a_tmp[], int n) {
                             a[key] = a[j++];
                         }
                         continue;
-                    }
-
+                    } 
+                    
                     if(j >= right ) {
                         a[key] = a_tmp[p++];
                     } else if(p >= mid) {
@@ -167,7 +166,7 @@ void simpleTimsort(int a[], int a_tmp[], int n) {
 
     //  collapse the stack of runs as follows: While num_in_stack > 1
     while(num_in_stack > 1) {
-        // Merge the last two runs
+        // Merge the last two runs 
         // (starting at runstack[num_in_stack-2] and runstack[num_in_stack - 1]);
         left = runstack[num_in_stack - 2];
         mid = runstack[num_in_stack - 1];

@@ -24,7 +24,7 @@ class SplayTree {
         k1->rchild = k2;
         return k1;
     }
-
+    
     Tree_node* Left_Rotate(Tree_node* k2) {
         Tree_node* k1 = k2->rchild;
         k2->rchild = k1->lchild;
@@ -32,54 +32,72 @@ class SplayTree {
         return k1;
 
     }
-    
+
     Tree_node* Splay(int key, Tree_node* root) {
-        // if root is null, return null;
-        if (!root) return NULL;
-        // Create a Tree_node Tree to grow the right, left subtrees as we go down
+        if (!root)
+            return NULL;
         Tree_node Tree;
-        // Initialize right and left children of Tree as null
+        /* .......*/
+////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////
         Tree.lchild = NULL;
         Tree.rchild = NULL;
-        // Initialize the pointers Rpoint, Lpoint as to where to insert left and right subtrees
-        Tree_node* Lpoint = &Tree;
-        Tree_node* Rpoint = &Tree;
-        // Do until break:
-        while(true) {
+
+        Tree_node* LeftTreeMax = &Tree;
+        Tree_node* RightTreeMin = &Tree;
+        int flag = 1;
+
+        while(flag) {
             if(key < root->key) {
-                if(!root->lchild) break;
+                if(!root->lchild) {
+                    flag = 0; 
+                    continue;
+                }
+
                 if(key < root->lchild->key) {
                     root = Right_Rotate(root);
-                    if(!root->lchild) break;
+                    if(!root->lchild) {
+                        flag = 0; 
+                        continue;
+                    }
                 }
-                // Split current root and all of its right descendants into right subtree
-                Rpoint->lchild = root;
-                Rpoint = Rpoint->lchild;
+
+                RightTreeMin->lchild = root;
+                RightTreeMin = RightTreeMin->lchild;
                 root = root->lchild;
-                Rpoint->lchild = NULL;
+                RightTreeMin->lchild = NULL;
             } else if(key > root->key) {
-                if(!root->rchild) break;
-                // if the new root has no left child, break out of Do
+                if(!root->rchild) {
+                    flag = 0; 
+                    continue;
+                }
+
                 if(key > root->rchild->key) {
                     root = Left_Rotate(root);
-                    if(!root->rchild) break;
+                    if(!root->rchild) {
+                        flag = 0; 
+                        continue;
+                    }
                 }
-                // Split current root and all its left descendants to left subtree
-                Lpoint->rchild = root;
-                Lpoint = Lpoint->rchild;
+
+                LeftTreeMax->rchild = root;
+                LeftTreeMax = LeftTreeMax->rchild;
                 root = root->rchild;
-                Lpoint->rchild = NULL;
-            } 
-            else break;
+                LeftTreeMax->rchild = NULL;
+            } else {
+                flag = 0; 
+                continue;
+            }
         }
-        // Assemble the final splay tree by merging center, left and right,
-        Lpoint->rchild = root->lchild;
-        Rpoint->lchild = root->rchild;
+
+        LeftTreeMax->rchild = root->lchild;
+        RightTreeMin->lchild = root->rchild;
         root->lchild = Tree.rchild;
         root->rchild = Tree.lchild;
-
         return root;
     }
+////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////
 
     Tree_node* New_Node(int key) {
         Tree_node*  my_node = new Tree_node;
@@ -111,7 +129,7 @@ class SplayTree {
             my_node->lchild = root;
             root->rchild = NULL;
             root = my_node;
-        } else { 
+        } else { /* it's already in tree, don't add it again*/
             delete my_node;
             return root;
         }
