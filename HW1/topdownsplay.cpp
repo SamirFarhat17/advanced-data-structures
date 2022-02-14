@@ -47,9 +47,9 @@ class SplayTree {
         // Do until break:
         while(true) {
             if(key < root->key) {
-                if(!root->lchild) break;
+                if(!(root->lchild)) break;
                 // if key < left_child’s key
-                if(key < root->lchild->key) {
+                if(key < (root->lchild->key)) {
                     root = Right_Rotate(root);
                     if(!root->lchild) break;
                 }
@@ -58,10 +58,10 @@ class SplayTree {
                 Rpoint = Rpoint->lchild;
                 root = root->lchild;
                 Rpoint->lchild = NULL;
-            } else if(key > root->key) {
+            } else if(key > (root->key)) {
                 if(!root->rchild) break;
                 // if the new root has no left child, break out of Do
-                if(key > root->rchild->key) {
+                if(key > (root->rchild->key)) {
                     root = Left_Rotate(root);
                     if(!root->rchild) break;
                 }
