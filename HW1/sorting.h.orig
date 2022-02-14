@@ -4,7 +4,7 @@
 using namespace std;
 
 void mergeHelper(int key, int left, int mid, int right, int a_tmp[], int a[]) {
-    int p = left;
+    int p = left; 
     int j = mid;
     for(key = left; key < right; key++) {
         if(j < right && p < mid) {
@@ -153,7 +153,7 @@ void simpleTimsort(int a[], int a_tmp[], int n) {
                     a_tmp[p] = a[p];
                 }
 
-                mergeHelper(key, left, mid, right, a_tmp, a);
+                mergeHelper(key,left,mid,right, a_tmp, a);
 
                 num_in_stack--;
                 runstack[num_in_stack] = i;
