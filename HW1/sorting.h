@@ -3,6 +3,20 @@
 #include <stdlib.h>
 using namespace std;
 
+void insertSortHelper(int left, int right, int a[]) {
+    int j, key;
+    for(int i = left + 1; i <= right; i++) {
+            j = i - 1;
+            key = a[i];
+
+            while(j >= left && a[j] > key) {
+                a[j + 1] = a[j];
+                j--;
+            }
+            a[j + 1] = key;
+        }
+}
+
 void mergeHelper(int key, int left, int mid, int right, int a_tmp[], int a[]) {
     int p = left;
     int j = mid;
@@ -89,18 +103,7 @@ void mergeSortblend(int a[], int a_tmp[], int l, int r) {
         }
     }
 
-    else {
-        for(i = l + 1; i <= r; i++) {
-            j = i - 1;
-            n = a[i];
-
-            while(j >= l && a[j] > n) {
-                a[j + 1] = a[j];
-                j--;
-            }
-            a[j + 1] = n;
-        }
-    }
+    else insertSortHelper(l, r, a);
 }
 
 // Improved performance by factor of ~2
