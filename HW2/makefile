@@ -1,31 +1,36 @@
 .SUFFIXES:
-.SUFFIXES: .o .cpp
+.SUFFIXES:
+.o .cpp
 #============================================================
 TARGET	=  heaptest KMP
 
-C_SOURCES =  main.cpp KMP.cpp
-C_OBJS     = main.o KMP.o
+           C_SOURCES =  main.cpp KMP.cpp
+                        C_OBJS     = main.o KMP.o
 
-CCX = g++
-CXXFLAGS = -g -std=c++11  -Wall
+                                     CCX = g++
+                                             CXXFLAGS = -g - std = c++11  - Wall
 
 #============================================================
-all: $(TARGET)
+                                                     all:
+                                                     $(TARGET)
 
-.o:.cpp	$(MY_INCLUDES)
-	$(CCX)  -c  $(CXXFLAGS) $<  
+                                                     .o:
+                                                     .cpp	$(MY_INCLUDES)
+                                                     $(CCX)  - c  $(CXXFLAGS) $ <
 
-heaptest :   main.o
-	$(CCX) $(CXXFLAGS)  $^ $(LIBDIRS)  -o $@
+                                                     heaptest :
+                                                     main.o
+                                                     $(CCX) $(CXXFLAGS)  $^ $(LIBDIRS)  - o $@
 
-KMP :   KMP.o
-	$(CCX) $(CXXFLAGS)  $^ $(LIBDIRS)  -o $@
+                                                     KMP :
+                                                     KMP.o
+                                                     $(CCX) $(CXXFLAGS)  $^ $(LIBDIRS)  - o $@
 
 # Implicit rules: $@ = target name, $< = first prerequisite name, $^ = name of all prerequisites
 #============================================================
 
-clean:
-	rm -f $(TARGET) $(C_OBJS) core *~
+                                                     clean:
+                                                     rm - f $(TARGET) $(C_OBJS) core * ~
 
 
 
