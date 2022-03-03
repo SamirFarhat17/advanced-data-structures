@@ -1,72 +1,58 @@
-#ifndef BINARY_HEAP_H_
-#define BINARY_HEAP_H_
+
+#include <chrono>
+#include <iostream>
+#include <fstream>
+#include "myHeap.h"
 
 using namespace std;
 
-const int MAX_SIZE = 100000; //the maximum amount of elements our heap should have.
+typedef struct heapItem{
+	int key;
+	double data;
+	int position;
+} hItem;
 
-template <typename Object>
-class Heap {
-  public:
-    Heap() {
-        elements = 0;
-    };
-    void insert(Object* item) { // Add the object pointer item to the heap
-        if (elements >= MAX_SIZE) {
-            cout << "Heap is full; can't insert " << endl;
-            // FILL IN THE REST
+int myrand(int iseed){
+	int wrap = 131071;
+	int factor = 23;
+	return (factor*iseed)%wrap;
+}
 
-            return;
-        }
+int main() 
+{
+	Heap<hItem> *thisHeap;
+	int i;
+	thisHeap = new Heap<hItem>;
 
-    };
-    Object* remove_min() {
-        if (elements == 0) {
-            cout << "empty heap error, can't delete" << endl;
-        }
-        Object* temp = array[0];
-        // FILL IN THE REST
+	hItem Elements[1000];
+	hItem *temp;
+	int newkey;
+	int iseed=3571;
 
-        return temp;
-    };       // Remove the smallest element in the heap & restructure heap
+	for(i = 0;i<1000;i++){
+		iseed = myrand(iseed);
+		Elements[i].key = iseed;  
+		iseed = myrand(iseed);
+		Elements[i].data = ((double) iseed)/10000.0;
+		thisHeap->insert(&Elements[i]);
+	}
 
-    void decreaseKey(int pos, int val) { // Decreases Key in pos to val
-        // FILL IN THE REST
-    };
-
-
-    bool IsEmpty() const {
-        return (elements <= 0);
-    };
-    bool IsFull() const {
-        return (elements >= MAX_SIZE );
-    };
-    int count() const {
-        return elements;
-    };
-    Object* value(int pos) const { //return a pointer to an object in heap position
-        if (pos >= elements) {
-            cout << "Out of range of heap " << pos << "elements " << elements << endl;
-        }
-        return (array[pos]);
-    };
-  protected:
-    Object* array[MAX_SIZE];
-    int elements;       //  how many elements are in the heap
-  private:
-    void downHeap(int pos) { // starting with element in position pos, sift it down the heap
-        // until it is in final min-heap position
-        Object* item = array[pos];
-
-        // FILL THIS IN
-
-    };
-
-    void upHeap(int new_pos) { // starting with element in position int, sift it up the heap
-        // until it is in final min-heap position
-        Object* item = array[new_pos];
-
-        //FILL IN THE REST
-    };
-};
-#endif
+	for (int j = 0; j<10; j++){
+		temp = thisHeap->remove_min();
+		cout << temp->key<<";" ;
+	}
+	cout << endl;
+	for (int j = 0; j < 100; j++){
+		newkey = Elements[j].key/37;
+		if (Elements[j].position < 0){			
+			continue;
+		}
+		thisHeap->decreaseKey(Elements[j].position, newkey);
+	}
+	for (int j = 0; j<10; j++){
+		temp = thisHeap->remove_min();
+		cout << temp->key<<";" ;
+	}
+	cout << endl;
+	return 0;
+}
