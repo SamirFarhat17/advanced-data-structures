@@ -115,24 +115,54 @@ int find_connected_components_BFS(int *FirstVertex, int V, int *EdgeList, int E,
     int current = -1;
     fill_n(Component, V, -1);
     queue<int> Q; // standard template library queue
-
+	// march 2nd slides, slide 17
+	// mark all unvisisted, parent as null, depth as -1
     for (int kk = 0; kk < V; kk++) {
         if (Component[kk] < 0) {
             NCC_BFS++;
 
             // Implement a BFS starting from vertex kk.  Mark every vertex v you find with
             // Component[v]= NCC_BFS, the component number.
-
+			// choose univisted vertex, marking it and enqueuing onto queue
+			Component[kk] = NCC_BFS;
+			Q.push(kk);
+			// while the queue is not empty
+			while(Q.size() > 0) {
+				// deque top vertex and do work
+				current = Q.front();
+				// For each vertex adjacent to v (e.g. in out list) that has not been visited:
+				// Mark it visited, mark its parent as v, and enqueue it 
+				for(int i = FirstVertex[current]; i <= FirstVertex[current+1]-1; i++){
+					// If there are unvisited vertices, choose any unvisited vertex
+					// mark it as visited, enqueue it and repeat step 3
+					if(Component[EdgeList[i]] < 0) {
+						Component[EdgeList[i]] = NCC_BFS;
+						Q.push(EdgeList[i]);
+					}
+				}
+				// Dequeue top vertex v from the queue
+				Q.pop();
+			}
         }
     }
 
     return NCC_BFS;
 }
 void DFS(int v, int *FirstVertex, int V, int *EdgeList, int E, int *Component, int NCC) {
-    //
     // Implement this function.  Mark v with the number of the component. Then find an unmarked
     // neighbor of v and recursively do DFS on the neighbor
-
+	// march 2nd slides, slides 18-19
+	// if unvisited
+	if (Component[v] < 0) {
+		Component[v] = NCC;
+		int curr_edge;
+		// For neighbors of vertex 
+		for(int i = FirstVertex[v]; i <= FirstVertex[v+1]-1; i++) {
+			curr_edge = EdgeList[i];
+			// If neighbor is unvisited do DFS(neighbor) 
+			if (Component[curr_edge] < 0) DFS(curr_edge, FirstVertex, V, EdgeList, E, Component, NCC);	
+		}
+	}
 }
 
 

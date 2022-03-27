@@ -51,6 +51,17 @@ bool Chess_Board::DFS(int row) { // Add queen to row...
     // queens on the board in previous rows.
     //
     //
+    if (row >= getSize()) return true;
+
+    else {
+        for (int col = 0; col < getSize(); col++) {
+            if(goodMove(row, col)) {
+                AddQueen(row, col);
+                if(DFS(row + 1)) return true;
+                else RemoveQueen(row, col);
+            }
+        }
+    }
     return found;
 }
 
@@ -69,6 +80,25 @@ bool Chess_Board::goodMove(int irow, int jcol) { // square is not captured by qu
     //  jcol can be captured by the existing queens on the board in rows 0 .. irow-1.
     //
     //
+    // check column above since lower checks are implicit in future
+    for(int i = 0; i < irow; i++) {
+        if(A[i][jcol] == 1) return false;
+    }
+    // check upper-right of diagonal since lower-left checks are implicit in future
+    int j = jcol;
+    for(int i = irow; i > -1; i--) {
+        if(A[i][j] == 1) return false;
+        j--;
+        if(j < 0) break;
+    }
+    // check upper-left of diagonal since lower right checks are implicit in future
+    j = jcol;
+    for(int i = irow; i > -1; i--) {
+        if(A[i][j] == 1) return false;
+        j++;
+        if(j >= getSize()) break;
+    }
+    // good to place
     return true;
 }
 
